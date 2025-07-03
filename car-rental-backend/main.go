@@ -5,6 +5,7 @@ import (
 	"carrental/handlers"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -28,6 +29,11 @@ func main() {
 	})
 
 	handler := c.Handler(r)
-	log.Println("Server started on :8000")
-	log.Fatal(http.ListenAndServe(":8000", handler))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000" // fallback for local dev
+	}
+	log.Printf("Server started on :%s", port)
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
