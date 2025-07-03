@@ -8,10 +8,15 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found or error loading .env")
+	}
 	db.InitDB()
 
 	r := mux.NewRouter()
