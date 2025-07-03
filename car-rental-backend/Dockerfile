@@ -1,24 +1,24 @@
-# Use the official Golang image as a build stage
-FROM golang:1.24
+# Start from the latest golang image
+FROM golang:1.21 AS builder
 
-
+# Set the working directory
 WORKDIR /app
 
+# Copy go mod files and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Copy the rest of the code
 COPY . .
 
-RUN go build -o car-rental-app main.go
+# Build the Go app
+RUN go build -o main .
 
-# Use a minimal base image for the final container
-FROM debian:bookworm-slim
+# Final minimal image
+FROM alpine:latest
 
-WORKDIR /app
+WORKDIR /root/
+COPY --from=builder /app/main .
 
-COPY --from=builder /app/car-rental-app .
-COPY --from=builder /app/.env . # Optional: copy .env if needed
-
-EXPOSE 10000
-
-CMD ["./car-rental-app"]
+EXPOSE 8000
+CMD ["./main"]
